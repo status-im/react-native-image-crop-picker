@@ -227,9 +227,11 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
         List<String> missingPermissions = new ArrayList<>();
         List<String> supportedPermissions = new ArrayList<>(requiredPermissions);
 
-        // android 11 introduced scoped storage, and WRITE_EXTERNAL_STORAGE no longer works there
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-            supportedPermissions.remove(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        // android 11 introduced scoped storage, and WRITE_EXTERNAL_STORAGE no longer works there but we still need READ_EXTERNAL_STORAGE
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (supportedPermissions.remove(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                supportedPermissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+            }
         }
 
         for (String permission : supportedPermissions) {
@@ -254,7 +256,7 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
                             if (grantResult == PackageManager.PERMISSION_DENIED) {
                                 if (permission.equals(Manifest.permission.CAMERA)) {
                                     promise.reject(E_NO_CAMERA_PERMISSION_KEY, E_NO_CAMERA_PERMISSION_MSG);
-                                } else if (permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                                } else if (permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE) || permission.equals(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                                     promise.reject(E_NO_LIBRARY_PERMISSION_KEY, E_NO_LIBRARY_PERMISSION_MSG);
                                 } else {
                                     // should not happen, we fallback on E_NO_LIBRARY_PERMISSION_KEY rejection for minimal consistency
