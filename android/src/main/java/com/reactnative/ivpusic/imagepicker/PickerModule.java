@@ -227,8 +227,8 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
         List<String> missingPermissions = new ArrayList<>();
         List<String> supportedPermissions = new ArrayList<>(requiredPermissions);
 
-        // android 11 introduced scoped storage, and WRITE_EXTERNAL_STORAGE no longer works there
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+        // android 10 introduced scoped storage, and WRITE_EXTERNAL_STORAGE no longer works there
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !Environment.isExternalStorageLegacy()) {
             supportedPermissions.remove(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
 
